@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Bot, FileText, MessageCircle, Clock, User } from 'lucide-react'
+import { ArrowLeft, Bot, FileText, MessageCircle, Clock, User, Lightbulb, X } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface Agent {
@@ -43,6 +43,8 @@ export default function AgentDetails() {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
+  const [suggestions, setSuggestions] = useState<string | null>(null)
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false)
 
   useEffect(() => {
     if (agentId) {
@@ -85,6 +87,41 @@ export default function AgentDetails() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const getSuggestions = async () => {
+    if (!agentId) return
+    
+    try {
+      setLoadingSuggestions(true)
+      const response = await fetch('http://localhost:5001/api/improve/improve-agent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ agentId }),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setSuggestions(data.response)
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to get suggestions.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Error getting suggestions:', error)
+      toast({
+        title: "Error",
+        description: "Failed to get suggestions.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoadingSuggestions(false)
     }
   }
 
@@ -168,9 +205,21 @@ export default function AgentDetails() {
           {agent && (
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-foreground flex items-center space-x-2">
-                  <Bot className="w-5 h-5" />
-                  <span>Agent Information</span>
+                <CardTitle className="text-foreground flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Bot className="w-5 h-5" />
+                    <span>Agent Information</span>
+                  </div>
+                  <Button
+                    onClick={getSuggestions}
+                    disabled={loadingSuggestions}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                  >
+                    <Lightbulb className="w-4 h-4 mr-1" />
+                    {loadingSuggestions ? 'Loading...' : 'Suggest Improvements'}
+                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -324,6 +373,36 @@ export default function AgentDetails() {
           </Card>
         </div>
       </div>
+
+      {/* Suggestions Modal */}
+      {suggestions && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+                <Lightbulb className="w-5 h-5 text-yellow-500" />
+                <span>Agent Improvement Suggestions</span>
+              </h3>
+              <Button
+                onClick={() => setSuggestions(null)}
+                variant="ghost"
+                size="sm"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <div className="prose prose-sm max-w-none text-foreground">
+                {suggestions.split('\n').map((line, index) => (
+                  <p key={index} className="mb-2 text-sm leading-relaxed">
+                    {line}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
