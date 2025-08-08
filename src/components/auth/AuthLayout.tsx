@@ -13,9 +13,11 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           <div className="w-full max-w-md p-8">
             <div className="text-center mb-8">
               <div className="flex items-center justify-center mb-4">
-                <div className="w-10 h-10 bg-gradient-brand rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">C</span>
-                </div>
+                <img 
+                  src="/lyzr-ai-icon-filled-256.png" 
+                  alt="Lyzr AI" 
+                  className="w-10 h-10 rounded-lg"
+                />
                 <span className="ml-3 text-2xl font-bold text-foreground">Lyzr Chatbase</span>
               </div>
               <h1 className="text-3xl font-bold mb-2 text-foreground">Welcome Back</h1>

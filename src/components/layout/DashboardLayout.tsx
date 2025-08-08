@@ -16,9 +16,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/dashboard" className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">C</span>
-              </div>
+              <img 
+                src="/lyzr-ai-icon-filled-256.png" 
+                alt="Lyzr AI" 
+                className="w-8 h-8 rounded-lg"
+              />
               <span className="text-xl font-bold text-foreground">Lyzr Chatbase</span>
             </Link>
             
