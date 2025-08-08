@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/clerk-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -62,6 +62,7 @@ interface SentimentData {
 export default function Dashboard() {
   const { user } = useUser()
   const { toast } = useToast()
+  const navigate = useNavigate()
   const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
   const [tickets, setTickets] = useState<Ticket[]>([])
@@ -387,7 +388,11 @@ export default function Dashboard() {
                   {displayedTickets.map((ticket) => {
                     const agent = agents.find(a => a._id === ticket.agent)
                     return (
-                      <Card key={ticket._id} className="bg-card border-border">
+                      <Card 
+                        key={ticket._id} 
+                        className="bg-card border-border cursor-pointer hover:bg-accent/50 transition-colors"
+                        onClick={() => navigate(`/ticket/${ticket._id}`)}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">

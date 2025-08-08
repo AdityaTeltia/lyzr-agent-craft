@@ -8,6 +8,7 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import CreateAgent from "./pages/CreateAgent";
 import AgentDetails from "./pages/AgentDetails";
+import TicketDetails from "./pages/TicketDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
             <Route path="/create-agent" element={<DashboardLayout><CreateAgent /></DashboardLayout>} />
             <Route path="/agent/:agentId" element={<DashboardLayout><AgentDetails /></DashboardLayout>} />
+            <Route path="/ticket/:ticketId" element={<DashboardLayout><TicketDetails /></DashboardLayout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthLayout>

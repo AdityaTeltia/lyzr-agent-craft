@@ -25,28 +25,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             </div>
             
             <div className="space-y-4">
-              <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
-                <button className="w-full bg-foreground text-background py-3 px-4 rounded-lg font-medium hover:bg-foreground/90 transition-smooth">
-                  Sign In
-                </button>
-              </SignInButton>
-              
-              <div className="text-center text-sm text-muted-foreground">
-                Don't have an account?{' '}
-                <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
-                  <button className="text-primary hover:underline font-medium">
-                    Sign up
-                  </button>
-                </SignUpButton>
-              </div>
-              
-              <div className="flex items-center my-6">
-                <div className="flex-1 border-t border-border"></div>
-                <span className="px-4 text-sm text-muted-foreground">OR CONTINUE WITH</span>
-                <div className="flex-1 border-t border-border"></div>
-              </div>
-              
-              <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+              <SignInButton mode="redirect" fallbackRedirectUrl="/dashboard">
                 <button className="w-full bg-card border border-border text-foreground py-3 px-4 rounded-lg font-medium hover:bg-accent transition-smooth flex items-center justify-center gap-2">
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
