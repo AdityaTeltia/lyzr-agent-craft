@@ -31,7 +31,7 @@ export default function Dashboard() {
   const fetchAgents = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`http://localhost:5001/api/agents/user/${user?.id}`)
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/agents/user/${user?.id}`)
       if (response.ok) {
         const data = await response.json()
         setAgents(data)

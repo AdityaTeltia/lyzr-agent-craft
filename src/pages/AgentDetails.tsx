@@ -55,7 +55,7 @@ export default function AgentDetails() {
 
   const fetchAgentDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/agents/${agentId}`)
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/agents/${agentId}`)
       if (response.ok) {
         const data = await response.json()
         setAgent(data)
@@ -73,7 +73,7 @@ export default function AgentDetails() {
   const fetchTickets = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`http://localhost:5001/api/tickets/get-ticket-by-agent/${agentId}`)
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/tickets/get-ticket-by-agent/${agentId}`)
       if (response.ok) {
         const data = await response.json()
         setTickets(data)
@@ -95,7 +95,7 @@ export default function AgentDetails() {
     
     try {
       setLoadingSuggestions(true)
-      const response = await fetch('http://localhost:5001/api/improve/improve-agent', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/improve/improve-agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

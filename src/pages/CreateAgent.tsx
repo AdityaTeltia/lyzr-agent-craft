@@ -57,7 +57,7 @@ export default function CreateAgent() {
       formDataToSend.append('userId', user?.id || '')
       formDataToSend.append('file', file)
 
-      const response = await fetch('http://localhost:5001/api/agents/create-agent', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/agents/create-agent`, {
         method: 'POST',
         body: formDataToSend
       })
