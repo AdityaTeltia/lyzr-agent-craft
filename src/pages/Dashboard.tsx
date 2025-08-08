@@ -119,7 +119,7 @@ export default function Dashboard() {
   const fetchTickets = async () => {
     try {
       setTicketsLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/tickets/get-all-tickets`)
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/tickets/get-ticket-by-admin/${user?.id}`)
       if (response.ok) {
         const data = await response.json()
         setTickets(Array.isArray(data) ? data : [])
