@@ -118,15 +118,22 @@ export default function Dashboard() {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/tickets/get-all-tickets`)
       if (response.ok) {
         const data = await response.json()
-        setTickets(data)
+        setTickets(Array.isArray(data) ? data : [])
       } else {
         console.error('Failed to fetch tickets')
+        setTickets([])
+        toast({
+          title: "Warning",
+          description: "Could not load tickets. The tickets service may be unavailable.",
+          variant: "destructive"
+        })
       }
     } catch (error) {
       console.error('Error fetching tickets:', error)
+      setTickets([])
       toast({
         title: "Error",
-        description: "Failed to fetch tickets. Please try again.",
+        description: "Failed to fetch tickets. Please check your connection.",
         variant: "destructive"
       })
     } finally {
@@ -146,16 +153,32 @@ export default function Dashboard() {
       })
       if (response.ok) {
         const data = await response.json()
-        const parsedResponse = JSON.parse(data.response)
-        setSentimentData(parsedResponse.sentiment_analysis)
+        if (data.success && data.response) {
+          const parsedResponse = JSON.parse(data.response)
+          setSentimentData(parsedResponse.sentiment_analysis)
+        } else {
+          setSentimentData(null)
+          toast({
+            title: "Info",
+            description: "No sentiment data available for this agent.",
+            variant: "default"
+          })
+        }
       } else {
         console.error('Failed to fetch sentiment data')
+        setSentimentData(null)
+        toast({
+          title: "Warning",
+          description: "Could not load sentiment data. The service may be unavailable.",
+          variant: "destructive"
+        })
       }
     } catch (error) {
       console.error('Error fetching sentiment data:', error)
+      setSentimentData(null)
       toast({
         title: "Error",
-        description: "Failed to fetch sentiment data. Please try again.",
+        description: "Failed to fetch sentiment data. Please check your connection.",
         variant: "destructive"
       })
     } finally {
@@ -177,9 +200,11 @@ export default function Dashboard() {
         {
           label: 'Sentiment Score',
           data,
-          borderColor: 'hsl(var(--primary))',
-          backgroundColor: 'hsl(var(--primary) / 0.1)',
+          borderColor: 'white',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
           tension: 0.1,
+          pointBackgroundColor: 'white',
+          pointBorderColor: 'white',
         },
       ],
     }
@@ -190,17 +215,35 @@ export default function Dashboard() {
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          color: 'white'
+        }
       },
       title: {
         display: true,
         text: 'Conversation Sentiment Trend',
+        color: 'white'
       },
     },
     scales: {
+      x: {
+        ticks: {
+          color: 'white'
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
+      },
       y: {
         beginAtZero: true,
         max: 1,
         min: -1,
+        ticks: {
+          color: 'white'
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
       },
     },
   }
