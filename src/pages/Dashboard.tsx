@@ -39,12 +39,15 @@ interface Agent {
 
 interface Ticket {
   _id: string
-  agentId: string
+  agent: string
   userId: string
   createdAt: string
   updatedAt: string
   status: string
-  messages: any[]
+  chatHistory: any[]
+  title: string
+  description: string
+  priority: string
 }
 
 interface SentimentData {
@@ -382,7 +385,7 @@ export default function Dashboard() {
               <>
                 <div className="space-y-4">
                   {displayedTickets.map((ticket) => {
-                    const agent = agents.find(a => a._id === ticket.agentId)
+                    const agent = agents.find(a => a._id === ticket.agent)
                     return (
                       <Card key={ticket._id} className="bg-card border-border">
                         <CardContent className="p-4">
@@ -396,16 +399,16 @@ export default function Dashboard() {
                                   {agent?.name || 'Unknown Agent'}
                                 </h4>
                                 <p className="text-sm text-muted-foreground">
-                                  {ticket.messages?.length || 0} messages
+                                  {ticket.chatHistory?.length || 0} messages
                                 </p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <Badge variant={ticket.status === 'active' ? 'default' : 'secondary'}>
+                              <Badge variant={ticket.status === 'open' ? 'default' : 'secondary'}>
                                 {ticket.status}
                               </Badge>
                               <p className="text-xs text-muted-foreground mt-1">
-                                {new Date(ticket.createdAt).toLocaleDateString()}
+                                {new Date(ticket.chatHistory?.[0]?.timestamp || ticket.createdAt).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
