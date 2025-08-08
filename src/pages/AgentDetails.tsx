@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Bot, FileText, MessageCircle, Clock, User, Lightbulb, X } from 'lucide-react'
+import { ArrowLeft, Bot, FileText, MessageCircle, Clock, User, Lightbulb, X, Pencil, Check } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { Textarea } from '@/components/ui/textarea'
 
 interface Agent {
   _id: string
@@ -45,6 +46,9 @@ export default function AgentDetails() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
   const [suggestions, setSuggestions] = useState<string | null>(null)
   const [loadingSuggestions, setLoadingSuggestions] = useState(false)
+  const [isEditingPrompt, setIsEditingPrompt] = useState(false)
+  const [editedPrompt, setEditedPrompt] = useState('')
+  const [updatingPrompt, setUpdatingPrompt] = useState(false)
 
   useEffect(() => {
     if (agentId) {
@@ -52,6 +56,12 @@ export default function AgentDetails() {
       fetchTickets()
     }
   }, [agentId])
+
+  useEffect(() => {
+    if (agent) {
+      setEditedPrompt(agent.systemPrompt)
+    }
+  }, [agent])
 
   const fetchAgentDetails = async () => {
     try {
@@ -123,6 +133,53 @@ export default function AgentDetails() {
     } finally {
       setLoadingSuggestions(false)
     }
+  }
+
+  const updateSystemPrompt = async () => {
+    if (!agentId || !editedPrompt.trim()) return
+    
+    try {
+      setUpdatingPrompt(true)
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/agents/update-agent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agentId,
+          systemPrompt: editedPrompt.trim(),
+        }),
+      })
+      
+      if (response.ok) {
+        setAgent(prev => prev ? { ...prev, systemPrompt: editedPrompt.trim() } : null)
+        setIsEditingPrompt(false)
+        toast({
+          title: "Success",
+          description: "System prompt updated successfully.",
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to update system prompt.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Error updating system prompt:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update system prompt.",
+        variant: "destructive"
+      })
+    } finally {
+      setUpdatingPrompt(false)
+    }
+  }
+
+  const cancelEdit = () => {
+    setEditedPrompt(agent?.systemPrompt || '')
+    setIsEditingPrompt(false)
   }
 
   const formatTimestamp = (timestamp: string) => {
@@ -231,8 +288,61 @@ export default function AgentDetails() {
                 <Separator />
                 
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">System Prompt</Label>
-                  <p className="text-foreground text-sm mt-1 leading-relaxed">{agent.systemPrompt}</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-sm font-medium text-muted-foreground">System Prompt</Label>
+                    {!isEditingPrompt && (
+                      <Button
+                        onClick={() => setIsEditingPrompt(true)}
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {isEditingPrompt ? (
+                    <div className="space-y-3">
+                      <Textarea
+                        value={editedPrompt}
+                        onChange={(e) => setEditedPrompt(e.target.value)}
+                        className="bg-chatbase-surface border-border text-foreground min-h-[120px] text-sm"
+                        placeholder="Enter system prompt..."
+                      />
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          onClick={updateSystemPrompt}
+                          disabled={updatingPrompt || !editedPrompt.trim() || editedPrompt.trim() === agent.systemPrompt}
+                          size="sm"
+                          className="bg-gradient-brand text-white hover:opacity-90"
+                        >
+                          {updatingPrompt ? (
+                            <>
+                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1" />
+                              Updating...
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-3 h-3 mr-1" />
+                              Update
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          onClick={cancelEdit}
+                          disabled={updatingPrompt}
+                          size="sm"
+                          variant="outline"
+                          className="border-border text-foreground hover:bg-chatbase-surface"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-foreground text-sm mt-1 leading-relaxed">{agent.systemPrompt}</p>
+                  )}
                 </div>
                 
                 <Separator />
